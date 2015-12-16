@@ -8,22 +8,22 @@ void Milur_105Plugin::initialize(GlobalStructs::deviceInterviews handler)
     serial = new ConnectSerial();
     serial->setConfiguration(handler.type);
     mReadCommandList();
-    mStatus = false;
+    status = false;
 }
 
 bool Milur_105Plugin::connect()
 {
-    if( mStatus ) return true;
+    if( status ) return true;
     if(serial->connectPort())
         {
             mStatusPacket=1;
-            mStatus=true;
+            status=true;
             mComposeAuthorization();
             return true;
         }
     else
         {
-            mStatus=false;
+            status=false;
             mStatusPacket=-1;
             return false;
         }
@@ -31,33 +31,29 @@ bool Milur_105Plugin::connect()
 
 double Milur_105Plugin::disconnect()
 {
-    if(!mStatus)
+    if(!status)
         {
             mStatusPacket=-1;
             serial->disconnectPort();
             mComposeAnswerPacket(mAnswerData,2,mErrors);
             return mDataParsing(mAnswerData);
         }
-    else
-        {
-            mStatusPacket=5;
-            double param = mDataParsing(mComposeCloseSession());
-            serial->disconnectPort();
-            mStatus = false;
-            return param;
-        }
+   mStatusPacket=5;
+   double param = mDataParsing(mComposeCloseSession());
+   serial->disconnectPort();
+   status = false;
+   return param;
 }
 
-double Milur_105Plugin::getData(QByteArray data)
+double Milur_105Plugin::getData()
 {
-    Q_UNUSED(data);
-    qDebug() << "Milur_105Plugin: getData executed";
+    qDebug() << "Milur_105Plugin: getData executed. NOT IMPLEMENTED!";
     return 0;
 }
 
 double Milur_105Plugin::sendData(int command)
 {
-    if (mStatus)
+    if (status)
         {
             mStatusPacket=3;
             serial->setAnswerSize(mCommandList.value(command-1));
@@ -102,7 +98,7 @@ double Milur_105Plugin::mGetData(QByteArray data)
             {
                 qDebug() << "Milur_105Plugin: opening error. address =" <<
                             handler.address << " doesn't exist or bad crc.";
-                mStatus = false;
+                status = false;
             }
        break;
     }
@@ -125,7 +121,7 @@ double Milur_105Plugin::mGetData(QByteArray data)
                          << index << "address ="
                          << handler.address
                          << "doesn't exist or bad crc.";
-                mStatus = false;
+                status = false;
             }
        break;
     }
@@ -322,10 +318,7 @@ QByteArray Milur_105Plugin::mComposeCloseSession()
 void Milur_105Plugin::mReadCommandList()
 {
     mCommandList.clear();
-    QString path;
-    path.clear();
-    path.append(handler.type);
-    path.append(".cfg");
+    QString path = handler.type + ".cfg";
     QSettings *settings = new QSettings(path, QSettings::IniFormat);
 
     int size = settings->beginReadArray("Commands");
@@ -387,10 +380,7 @@ void Milur_105Plugin::mSetDateTime(QByteArray &data)
 double Milur_105Plugin::mDataParsing(QByteArray data)
 {
     //Reading configure
-    QString path;
-    path.clear();
-    path.append(handler.type);
-    path.append(".cfg");
+    QString path = handler.type + ".cfg";
     QSettings *settings = new QSettings(path, QSettings::IniFormat);
 
     bool energy, bitsInvert, typeConvert;

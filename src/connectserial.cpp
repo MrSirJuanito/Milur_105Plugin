@@ -15,38 +15,34 @@ ConnectSerial::~ConnectSerial()
     mSerialCounter->deleteLater();
 }
 
-void ConnectSerial::setConfiguration(QString path)
+void ConnectSerial::setConfiguration(QString type)
 {
     mConfigurationPath.clear();
-    mConfigurationPath = path;
+    mConfigurationPath = type + ".cfg";
 
-    QStringList list;
-    list.clear();
-    list << mConfigurationPath + "/port"
-         << mConfigurationPath + "/dataBits"
-         << mConfigurationPath + "/baudRate"
-         << mConfigurationPath + "/parity"
-         << mConfigurationPath + "/stopBits"
-         << mConfigurationPath + "/flowControl";
+    QSettings *settings = new QSettings(mConfigurationPath, QSettings::IniFormat);
 
-    //TODO: Replace hardcode
-    QString PATH = "settings.cfg";
+    settings->beginGroup("Common");
+    mPortName = settings->value("port").toString();
+    mDataBits = static_cast<QSerialPort::DataBits>(settings->value("dataBits").toInt());
+    mBaudRate = settings->value("baudRate").toInt();
+    mParity = static_cast<QSerialPort::Parity>(settings->value("parity").toInt());
+    mStopBits = static_cast<QSerialPort::StopBits>(settings->value("stopBits").toInt());
+    mFlowControl = static_cast<QSerialPort::FlowControl>(settings->value("flowControl").toInt());
+    settings->endGroup();
 
-    QSettings *settings = new QSettings(PATH, QSettings::IniFormat);
-    mPortName.clear();
-    mPortName.append(settings->value(list.at(0)).toString());
-    mDataBits = static_cast<QSerialPort::DataBits>(settings->value(list.at(1)).toInt());
-    mBaudRate = static_cast<qint32>(settings->value(list.at(2)).toInt());
-    mParity = static_cast<QSerialPort::Parity>(settings->value(list.at(3)).toInt());
-    mStopBits = static_cast<QSerialPort::StopBits>(settings->value(list.at(4)).toInt());
-    mFlowControl = static_cast<QSerialPort::FlowControl>(settings->value(list.at(5)).toInt());
+    settings->beginGroup("Serial");
+    mDeathDoors = settings->value("deathDoors").toInt();
+    mWait = settings->value("wait").toInt();
+    mWaitForRead = settings->value("waitForRead").toInt();
+    mWaitForWritten = settings->value("waitForWritten").toInt();
+    settings->endGroup();
 
-    mDeathDoors = settings->value("serial/deathDoors").toInt();
-    mWait = settings->value("serial/wait").toInt();
-    mWaitForRead = settings->value("serial/waitForRead").toInt();
-    mWaitForWritten = settings->value("serial/waitForWritten").toInt();
-    qDebug() << "Milur_105Plugin(SerialPort): loading settings "
-             << mWait << mDeathDoors << mWaitForRead << mWaitForWritten;
+    qDebug() << "Milur_105Plugin(SerialPort): settings serial."
+             << "mwait =" << mWait
+             << "mdeathdoors =" << mDeathDoors
+             << "mwaitforread =" << mWaitForRead
+             << "mwaitforwritten =" << mWaitForWritten;
 
     delete settings;
 }

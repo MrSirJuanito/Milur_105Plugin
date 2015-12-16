@@ -26,11 +26,10 @@ public:
     double sendData(int command);
 
 public slots:
-    double getData(QByteArray data);
+    double getData();
 
 //own
 private:
-    bool mStatus;
     int mErrors, mStatusPacket;
     ConnectSerial *serial;
     QList<int> mCommandList;

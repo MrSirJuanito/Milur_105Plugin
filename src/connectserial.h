@@ -11,7 +11,7 @@ public:
     explicit ConnectSerial(QObject *parent = 0);
     ~ConnectSerial();
 
-    void setConfiguration(QString path);
+    void setConfiguration(QString type);
     void setAnswerSize(int size);
     bool connectPort();
     void disconnectPort();
