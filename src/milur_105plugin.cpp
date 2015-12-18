@@ -2,6 +2,11 @@
 #include <QSettings>
 #include <qplugin.h>
 
+Milur_105Plugin::~Milur_105Plugin()
+{
+    deleteLater();
+}
+
 void Milur_105Plugin::initialize(GlobalStructs::deviceInterviews handler)
 {
     this->handler = handler;
@@ -36,13 +41,14 @@ double Milur_105Plugin::disconnect()
             mStatusPacket=-1;
             serial->disconnectPort();
             mComposeAnswerPacket(mAnswerData,2,mErrors);
-            return mDataParsing(mAnswerData);
+            return 0;
         }
    mStatusPacket=5;
-   double param = mDataParsing(mComposeCloseSession());
+   mComposeCloseSession();
+   //mDataParsing(mComposeCloseSession());
    serial->disconnectPort();
    status = false;
-   return param;
+   return 0;
 }
 
 double Milur_105Plugin::getData()
@@ -281,7 +287,7 @@ void Milur_105Plugin::mComposePacketForProcessor(QByteArray &data)
     qDebug() << "Device::mComposePacketForProcessor" << data.toHex();
 }
 
-QByteArray Milur_105Plugin::mComposeCloseSession()
+void Milur_105Plugin::mComposeCloseSession()
 {
     if(handler.address <= ADDRESS_COUNTER)
         {
@@ -293,7 +299,7 @@ QByteArray Milur_105Plugin::mComposeCloseSession()
             mMakeCRC(mDataCounter);
             qDebug() << "Notification:: Send disconnect packet: "
                      << mDataCounter.toHex();
-            return serial->writeData(mDataCounter);
+            serial->writeData(mDataCounter);
         }
     else
         {
@@ -310,7 +316,7 @@ QByteArray Milur_105Plugin::mComposeCloseSession()
             mMakeCRC(mDataCounter);
             qDebug() << "Notification:: Send disconnect packet: "
                      << mDataCounter.toHex();
-            return serial->writeData(mDataCounter);
+            serial->writeData(mDataCounter);
         }
 
 }
@@ -383,12 +389,12 @@ double Milur_105Plugin::mDataParsing(QByteArray data)
     QString path = handler.type + ".cfg";
     QSettings *settings = new QSettings(path, QSettings::IniFormat);
 
-    bool energy, bitsInvert, typeConvert;
+    bool energy, bytesInvert, typeConvert;
     int div;
     QString name;
     settings->beginGroup(QString::number(curCommand));
     energy = settings->value("energy", false).toBool();
-    bitsInvert = settings->value("bytesInvert", false).toBool();
+    bytesInvert = settings->value("bytesInvert", false).toBool();
     typeConvert = settings->value("typeConvert", false).toBool();
     div = settings->value("div", 1).toInt();
     name = settings->value("name", "Unnamed parameter").toString();
@@ -416,9 +422,10 @@ double Milur_105Plugin::mDataParsing(QByteArray data)
     else
     {
         QByteArray tmp1;
-        if( bitsInvert )
+        if( bytesInvert )
         {
             QByteArray tmp2;
+            if( data.length() > 0 )
             for( int i = data.length()-1; i >= 0; i-- )
                 tmp2.append(data[i]);
             tmp1 = tmp2.toHex();

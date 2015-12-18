@@ -1,7 +1,7 @@
 #ifndef MILUR_105PLUGIN_H
 #define MILUR_105PLUGIN_H
 
-#include "D:/Work/Coding/uspd_ssd/src/idevice.h"
+#include "D:/Work/CSD/Git/uspd_ssd/src/idevice.h"
 #include "connectserial.h"
 #include "crc.h"
 
@@ -20,12 +20,11 @@ Q_INTERFACES(IDevice)
 
 //IDevice
 public:
+    ~Milur_105Plugin();
     void initialize(GlobalStructs::deviceInterviews handler);
     bool connect();
     double disconnect();
     double sendData(int command);
-
-public slots:
     double getData();
 
 //own
@@ -40,7 +39,7 @@ private:
     QByteArray mComposePacket(int command);
     void mComposeAnswerPacket(QByteArray &data, int stat, int check);
     void mComposePacketForProcessor(QByteArray &data);
-    QByteArray mComposeCloseSession();
+    void mComposeCloseSession();
     void mReadCommandList();
     void mSetDateTime(QByteArray&);
     bool mCheckCRC(QByteArray &data);
