@@ -446,5 +446,6 @@ double Milur_105Plugin::mDataParsing(QByteArray data)
     }
 
     qDebug() << name + ":" << dparam;
+    delete settings;
     return dparam;
 }
