@@ -1,7 +1,8 @@
 #ifndef MILUR_105PLUGIN_H
 #define MILUR_105PLUGIN_H
 
-#include "D:/Work/CSD/Git/uspd_ssd/src/idevice.h"
+//#include "D:/Work/CSD/Git/uspd_ssd/src/idevice.h"
+#include "D:/Work/Coding/uspd_ssd/src/idevice.h"
 #include "connectserial.h"
 #include "crc.h"
 
@@ -11,7 +12,7 @@
 #define A_RELEASE 9
 #define ADDRESS_COUNTER 255
 
-class Milur_105Plugin : public QObject, public IDevice
+class Milur_105Plugin : public IDevice
 {
 
 Q_OBJECT
