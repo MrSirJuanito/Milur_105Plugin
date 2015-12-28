@@ -22,13 +22,12 @@ bool Milur_105Plugin::connect()
     if(serial->connectPort())
         {
             mStatusPacket=1;
-            status=true;
-            mComposeAuthorization();
-            return true;
+            mGetData(mComposeAuthorization());
+            return status;
         }
     else
         {
-            status=false;
+            status = false;
             mStatusPacket=-1;
             return false;
         }
@@ -159,7 +158,7 @@ double Milur_105Plugin::mGetData(QByteArray data)
     //error code return
 }
 
-void Milur_105Plugin::mComposeAuthorization()
+QByteArray Milur_105Plugin::mComposeAuthorization()
 {
     if(handler.address <= ADDRESS_COUNTER)
         {
@@ -172,7 +171,7 @@ void Milur_105Plugin::mComposeAuthorization()
             mMakeCRC(mDataCounter);
             qDebug() << "Milur_105Plugin: sending connection packet"
                      << mDataCounter.toHex();
-            serial->writeData(mDataCounter);
+            return serial->writeData(mDataCounter);
         }
     else
         {
@@ -190,7 +189,7 @@ void Milur_105Plugin::mComposeAuthorization()
             mMakeCRC(mDataCounter);
             qDebug() << "Milur_105Plugin: sending connection packet"
                      << mDataCounter.toHex();
-            serial->writeData(mDataCounter);
+            return serial->writeData(mDataCounter);
     }
 }
 

@@ -1,8 +1,8 @@
 #ifndef MILUR_105PLUGIN_H
 #define MILUR_105PLUGIN_H
 
-//#include "D:/Work/CSD/Git/uspd_ssd/src/idevice.h"
-#include "D:/Work/Coding/uspd_ssd/src/idevice.h"
+#include "D:/Work/CSD/Git/uspd_ssd/src/idevice.h"
+//#include "D:/Work/Coding/uspd_ssd/src/idevice.h"
 #include "connectserial.h"
 #include "crc.h"
 
@@ -36,7 +36,7 @@ private:
     QByteArray mDataCounter, mAnswerData;
 
     double mDataParsing(QByteArray data);
-    void mComposeAuthorization();
+    QByteArray mComposeAuthorization();
     QByteArray mComposePacket(int command);
     void mComposeAnswerPacket(QByteArray &data, int stat, int check);
     void mComposePacketForProcessor(QByteArray &data);
