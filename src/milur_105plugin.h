@@ -10,6 +10,8 @@
 #define ADDRESS_FOUR 9
 #define A_OPEN 8
 #define A_RELEASE 9
+#define GET 1
+#define SET 2
 #define ADDRESS_COUNTER 255
 
 class Milur_105Plugin : public IDevice
@@ -30,6 +32,12 @@ public:
 
 //own
 private:
+    int mAddress;
+    int mTypeOfAddressing;
+    QString mDeviceType;
+    QString mID;
+    QString mTypeOfRequest;
+
     int mErrors, mStatusPacket;
     ConnectSerial *serial;
     QList<int> mCommandList;
